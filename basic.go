@@ -1,10 +1,10 @@
-package randomOrg
+package randomorg
 
 // Basic commands
 // see https://api.random.org/json-rpc/1/basic
 
 // RequestCommand invokes the request and parses all information down to the requested data block.
-func (r *RandomOrg) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
+func (r *Random) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
   result, err := r.invokeRequest(method, params)
   if err != nil {
     return nil, err
@@ -20,7 +20,7 @@ func (r *RandomOrg) requestCommand(method string, params map[string]interface{})
 }
 
 // Generate n number of random integers in the range from min to max.
-func (r *RandomOrg) GenerateIntegers(n int, min, max int64) ([]int64, error) {
+func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
   if ( n < 1 || n > 1e4 ) {
     return nil, ErrParamRage
   }
@@ -49,7 +49,7 @@ func (r *RandomOrg) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 }
 
 // GenerateDecimalFractions generates n number of decimal fractions with decimalPlaces number of decimal places.
-func (r *RandomOrg) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, error) {
+func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, error) {
   if ( n < 1 || n > 1e4 ) {
     return nil, ErrParamRage
   }

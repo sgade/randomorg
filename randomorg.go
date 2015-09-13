@@ -1,4 +1,4 @@
-package randomOrg
+package randomorg
 
 import (
 	"bytes"
@@ -27,30 +27,30 @@ var (
 
 // Random.org Client.
 // For more information, see https://api.random.org/json-rpc/1/.
-type RandomOrg struct {
+type Random struct {
 	// the api key
 	apiKey string
 	// reusable http.Client
 	client *http.Client
 }
 
-// NewRandomOrg creates a new RandomOrg client with the given apiKey.
-func NewRandomOrg(apiKey string) *RandomOrg {
+// NewRandom creates a new Random client with the given apiKey.
+func NewRandom(apiKey string) *Random {
 	// check the api key
 	if apiKey == "" {
 		panic(ErrAPIKey)
 	}
 
-	randomOrg := RandomOrg{
+	random := Random {
 		apiKey: apiKey,
 		client: &http.Client{},
 	}
 
-	return &randomOrg
+	return &random
 }
 
 // Get the json object with the given key from the given json object.
-func (r *RandomOrg) jsonMap(json map[string]interface{}, key string) (map[string]interface{}, error) {
+func (r *Random) jsonMap(json map[string]interface{}, key string) (map[string]interface{}, error) {
 	value := json[key]
 	if value == nil {
 		return nil, ErrJsonFormat
@@ -64,7 +64,7 @@ func (r *RandomOrg) jsonMap(json map[string]interface{}, key string) (map[string
 	return newMap, nil
 }
 
-func (r *RandomOrg) invokeRequest(method string, params map[string]interface{}) (map[string]interface{}, error) {
+func (r *Random) invokeRequest(method string, params map[string]interface{}) (map[string]interface{}, error) {
 	// always append api key
 	params["apiKey"] = r.apiKey
 
