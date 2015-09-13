@@ -3,7 +3,7 @@ package randomorg
 // Basic commands
 // see https://api.random.org/json-rpc/1/basic
 
-// RequestCommand invokes the request and parses all information down to the requested data block.
+// requestCommand invokes the request and parses all information down to the requested data block.
 func (r *Random) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
   result, err := r.invokeRequest(method, params)
   if err != nil {
@@ -139,4 +139,27 @@ func (r *Random) GenerateStrings(n, length int, characters string) ([]string, er
   }
 
   return strings, nil
+}
+
+// GenerateUUIDs generates n random version 4 Universally Unique Identifiers (see section 4.4 of RFC 4122)
+func (r *Random) GenerateUUIDs(n int) ([]string, error) {
+  if ( n < 1 || n > 1e3 ) {
+    return nil, ErrParamRange
+  }
+
+  params := map[string]interface{} {
+    "n": n,
+  }
+
+  values, err := r.requestCommand("generateUUIDs", params)
+  if err != nil {
+    return nil, err
+  }
+
+  uuids := make([]string, len(values))
+  for i, value := range values {
+    uuids[i] = value.(string)
+  }
+
+  return uuids, nil
 }
