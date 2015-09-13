@@ -20,7 +20,7 @@ func (r *RandomOrg) requestCommand(method string, params map[string]interface{})
 }
 
 // Generate n number of random integers in the range from min to max.
-func (r *RandomOrg) GenerateIntegers(n, min, max int64) ([]int64, error) {
+func (r *RandomOrg) GenerateIntegers(n int, min, max int64) ([]int64, error) {
   if ( n < 1 || n > 1e4 ) {
     return nil, ErrParamRage
   }
