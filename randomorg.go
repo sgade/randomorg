@@ -1,5 +1,6 @@
 // A Random.org API client as described at https://api.random.org/json-rpc/1/.
 // This is a third-party client. See https://github.com/sgade/randomorg.
+// For any method documentation you should take a look at the official API documentation.
 package randomorg
 
 import (
