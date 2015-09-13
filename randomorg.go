@@ -9,22 +9,34 @@ import (
 	"net/http"
 )
 
+// Private constants
 const (
+	// The Random.org API request endpoint URL
 	requestEndpoint = "https://api.random.org/json-rpc/1/invoke"
 )
 
+// Constants describing error situations.
 var (
+	// Error with the API key
 	ErrAPIKey     = errors.New("provide an api key")
+	// Error with the response json
 	ErrJsonFormat = errors.New("could not get key from given json")
+	// Invalid parameter range
+	ErrParamRage = errors.New("invalid parameter range")
 )
 
-// Random.org Client
+// Random.org Client.
+// For more information, see https://api.random.org/json-rpc/1/.
 type RandomOrg struct {
+	// the api key
 	apiKey string
+	// reusable http.Client
 	client *http.Client
 }
 
+// NewRandomOrg creates a new RandomOrg client with the given apiKey.
 func NewRandomOrg(apiKey string) *RandomOrg {
+	// check the api key
 	if apiKey == "" {
 		panic(ErrAPIKey)
 	}
@@ -37,6 +49,7 @@ func NewRandomOrg(apiKey string) *RandomOrg {
 	return &randomOrg
 }
 
+// Get the json object with the given key from the given json object.
 func (r *RandomOrg) jsonMap(json map[string]interface{}, key string) (map[string]interface{}, error) {
 	value := json[key]
 	if value == nil {
