@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-// Information related to the the usage of a given API key.
+// Usage holds information related to the the usage of a given API key.
 type Usage struct {
 	// A string indicating the API key's current status, which may be stopped, paused or running.
 	// An API key must be running for it to be able to serve requests.
@@ -109,14 +109,14 @@ func (r *Random) GetUsage() (Usage, error) {
 	params := map[string]interface{}{}
 
 	_, err := r.requestCommand("getUsage", params)
-	if err != nil && err != ErrJsonFormat {
+	if err != nil && err != ErrJSONFormat {
 		return Usage{}, err
 	}
 
 	return r.Usage()
 }
 
-// Returns the API usage. This will return a cached version of the last request, if there is one.
+// Usage returns the API usage. This will return a cached version of the last request, if there is one.
 func (r *Random) Usage() (Usage, error) {
 	if r.usage != nil && r.usage.isComplete {
 		return *r.usage, nil

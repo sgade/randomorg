@@ -15,7 +15,7 @@
  *
  */
 
-// A Random.org API client as described at https://api.random.org/json-rpc/1/.
+// Package randomorg is a Random.org API client as described at https://api.random.org/json-rpc/1/.
 // This is a third-party client. See https://github.com/sgade/randomorg.
 // For any method documentation you should take a look at the official API documentation.
 package randomorg
@@ -43,15 +43,16 @@ const (
 
 // Constants describing error situations.
 var (
-	// Error with the API key
+	// ErrAPIKey is the error returned when an invalid API key was given.
 	ErrAPIKey = errors.New("provide an api key")
-	// Error with the response json
-	ErrJsonFormat = errors.New("could not get key from given json")
-	// Invalid parameter range
+	// ErrJSONFormat is the error returned when the response JSON had an unexpected format.
+	ErrJSONFormat = errors.New("could not get key from given json")
+	// ErrParamRange is returned when invalid parameter ranges where given to a method.
+	// See the method API documentation for further details.
 	ErrParamRange = errors.New("invalid parameter range")
 )
 
-// Random.org Client.
+// A Random defines a Random.org API Client.
 // For more information, see https://api.random.org/json-rpc/1/.
 type Random struct {
 	// the api key
@@ -81,12 +82,12 @@ func NewRandom(apiKey string) *Random {
 func (r *Random) jsonMap(json map[string]interface{}, key string) (map[string]interface{}, error) {
 	value := json[key]
 	if value == nil {
-		return nil, ErrJsonFormat
+		return nil, ErrJSONFormat
 	}
 
 	newMap, ok := value.(map[string]interface{})
 	if !ok {
-		return nil, ErrJsonFormat
+		return nil, ErrJSONFormat
 	}
 
 	return newMap, nil
@@ -105,11 +106,11 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 		"params":  params,
 		"id":      requestUUID,
 	}
-	requestBodyJson, err := json.Marshal(requestBody)
+	requestBodyJSON, err := json.Marshal(requestBody)
 	if err != nil {
 		return nil, err
 	}
-	requestBodyReader := bytes.NewReader(requestBodyJson)
+	requestBodyReader := bytes.NewReader(requestBodyJSON)
 
 	req, err := http.NewRequest("POST", requestEndpoint, requestBodyReader)
 	if err != nil {
@@ -129,7 +130,7 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 	if err != nil {
 		return nil, err
 	}
-	var responseBody map[string]interface{} = make(map[string]interface{})
+	responseBody := make(map[string]interface{})
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
 		return nil, err
