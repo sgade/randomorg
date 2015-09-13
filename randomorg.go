@@ -7,6 +7,7 @@ import (
 	"code.google.com/p/go-uuid/uuid"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -28,6 +29,8 @@ var (
 	ErrJsonFormat = errors.New("could not get key from given json")
 	// Invalid parameter range
 	ErrParamRange = errors.New("invalid parameter range")
+	// API Error template string
+	errAPI = "API Error Code %v: %q."
 )
 
 // Random.org Client.
@@ -114,7 +117,20 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 		return nil, err
 	}
 
-	return responseBody["result"].(map[string]interface{}), nil
+	result, err := r.jsonMap(responseBody, "result")
+	if err != nil {
+		error, err := r.jsonMap(responseBody, "error")
+		if err != nil {
+			return nil, err
+		}
+
+		errorCode, _ := error["code"]
+		errorMessage, _ := error["message"]
+		err = fmt.Errorf(errAPI, errorCode, errorMessage)
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // requestCommand invokes the request and parses all information down to the requested data block.
