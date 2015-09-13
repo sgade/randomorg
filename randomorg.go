@@ -7,12 +7,15 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // Private constants
 const (
 	// The Random.org API request endpoint URL
 	requestEndpoint = "https://api.random.org/json-rpc/1/invoke"
+	// Example time format for ISO 8601
+	iso8601Example = time.RFC3339Nano //"2013-02-20 17:53:40Z"
 )
 
 // Constants describing error situations.
@@ -32,6 +35,8 @@ type Random struct {
 	apiKey string
 	// reusable http.Client
 	client *http.Client
+	// usage cache
+	usage *Usage
 }
 
 // NewRandom creates a new Random client with the given apiKey.
@@ -108,4 +113,23 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 	}
 
 	return responseBody["result"].(map[string]interface{}), nil
+}
+
+// requestCommand invokes the request and parses all information down to the requested data block.
+func (r *Random) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
+  result, err := r.invokeRequest(method, params)
+  if err != nil {
+    return nil, err
+  }
+
+  r.parseAndSaveUsage(result)
+
+  random, err := r.jsonMap(result, "random")
+  if err != nil {
+    return nil, err
+  }
+
+  data := random["data"].([]interface{})
+
+  return data, nil
 }

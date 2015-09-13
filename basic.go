@@ -3,22 +3,6 @@ package randomorg
 // Basic commands
 // see https://api.random.org/json-rpc/1/basic
 
-// requestCommand invokes the request and parses all information down to the requested data block.
-func (r *Random) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
-  result, err := r.invokeRequest(method, params)
-  if err != nil {
-    return nil, err
-  }
-  random, err := r.jsonMap(result, "random")
-  if err != nil {
-    return nil, err
-  }
-
-  data := random["data"].([]interface{})
-
-  return data, nil
-}
-
 // Generate n number of random integers in the range from min to max.
 func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
   if ( n < 1 || n > 1e4 ) {
