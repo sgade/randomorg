@@ -109,3 +109,33 @@ func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits
 
   return gaussians, nil
 }
+
+func (r *Random) GenerateStrings(n, length int, characters string) ([]string, error) {
+  if ( n < 1 || n > 1e4 ) {
+    return nil, ErrParamRange
+  }
+  if ( length < 1 || length > 20 ) {
+    return nil, ErrParamRange
+  }
+  if ( len(characters) < 1 || len(characters) > 80 ) {
+    return nil, ErrParamRange
+  }
+
+  params := map[string]interface{} {
+    "n": n,
+    "length": length,
+    "characters": characters,
+  }
+
+  values, err := r.requestCommand("generateStrings", params)
+  if err != nil {
+    return nil, err
+  }
+
+  strings := make([]string, len(values))
+  for i, value := range values {
+    strings[i] = value.(string)
+  }
+
+  return strings, nil
+}
