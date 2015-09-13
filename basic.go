@@ -110,6 +110,7 @@ func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits
   return gaussians, nil
 }
 
+// GenerateStrings generates n random strings with the given length composed from the characters.
 func (r *Random) GenerateStrings(n, length int, characters string) ([]string, error) {
   if ( n < 1 || n > 1e4 ) {
     return nil, ErrParamRange
