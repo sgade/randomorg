@@ -47,3 +47,30 @@ func (r *RandomOrg) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 
   return ints, nil
 }
+
+// GenerateDecimalFractions generates n number of decimal fractions with decimalPlaces number of decimal places.
+func (r *RandomOrg) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, error) {
+  if ( n < 1 || n > 1e4 ) {
+    return nil, ErrParamRage
+  }
+  if ( decimalPlaces < 1 || decimalPlaces > 20 ) {
+    return nil, ErrParamRage
+  }
+
+  params := map[string]interface{} {
+    "n": n,
+    "decimalPlaces": decimalPlaces,
+  }
+
+  values, err := r.requestCommand("generateDecimalFractions", params)
+  if err != nil {
+    return nil, err
+  }
+
+  decimals := make([]float64, len(values))
+  for i, value := range values {
+    decimals[i] = value.(float64)
+  }
+
+  return decimals, nil
+}
