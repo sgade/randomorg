@@ -1,3 +1,5 @@
+// A Random.org API client as described at https://api.random.org/json-rpc/1/.
+// This is a third-party client. See https://github.com/sgade/randomorg.
 package randomorg
 
 import (
@@ -21,7 +23,7 @@ const (
 // Constants describing error situations.
 var (
 	// Error with the API key
-	ErrAPIKey     = errors.New("provide an api key")
+	ErrAPIKey = errors.New("provide an api key")
 	// Error with the response json
 	ErrJsonFormat = errors.New("could not get key from given json")
 	// Invalid parameter range
@@ -46,7 +48,7 @@ func NewRandom(apiKey string) *Random {
 		panic(ErrAPIKey)
 	}
 
-	random := Random {
+	random := Random{
 		apiKey: apiKey,
 		client: &http.Client{},
 	}
@@ -117,19 +119,19 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 
 // requestCommand invokes the request and parses all information down to the requested data block.
 func (r *Random) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
-  result, err := r.invokeRequest(method, params)
-  if err != nil {
-    return nil, err
-  }
+	result, err := r.invokeRequest(method, params)
+	if err != nil {
+		return nil, err
+	}
 
-  r.parseAndSaveUsage(result)
+	r.parseAndSaveUsage(result)
 
-  random, err := r.jsonMap(result, "random")
-  if err != nil {
-    return nil, err
-  }
+	random, err := r.jsonMap(result, "random")
+	if err != nil {
+		return nil, err
+	}
 
-  data := random["data"].([]interface{})
+	data := random["data"].([]interface{})
 
-  return data, nil
+	return data, nil
 }
