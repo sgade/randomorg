@@ -74,3 +74,38 @@ func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, erro
 
   return decimals, nil
 }
+
+// GenerateGaussians generates true random numbers from a Gaussian distribution.
+func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits int) ([]float64, error) {
+  if ( n < 1 || n > 1e4 ) {
+    return nil, ErrParamRage
+  }
+  if ( mean < -1e6 || mean > 1e6 ) {
+    return nil, ErrParamRage
+  }
+  if ( standardDeviation < -1e6 || standardDeviation > 1e6 ) {
+    return nil, ErrParamRage
+  }
+  if (significantDigits < 2 || significantDigits > 20 ) {
+    return nil, ErrParamRage
+  }
+
+  params := map[string]interface{} {
+    "n": n,
+    "mean": mean,
+    "standardDeviation": standardDeviation,
+    "significantDigits": significantDigits,
+  }
+
+  values, err := r.requestCommand("generateGaussians", params)
+  if err != nil {
+    return nil, err
+  }
+
+  gaussians := make([]float64, len(values))
+  for i, value := range values {
+    gaussians[i] = value.(float64)
+  }
+
+  return gaussians, nil
+}
