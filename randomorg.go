@@ -19,6 +19,8 @@ const (
 	requestEndpoint = "https://api.random.org/json-rpc/1/invoke"
 	// Example time format for ISO 8601
 	iso8601Example = time.RFC3339Nano //"2013-02-20 17:53:40Z"
+	// API Error template string
+	errAPI = "API Error Code %v: %q."
 )
 
 // Constants describing error situations.
@@ -29,8 +31,6 @@ var (
 	ErrJsonFormat = errors.New("could not get key from given json")
 	// Invalid parameter range
 	ErrParamRange = errors.New("invalid parameter range")
-	// API Error template string
-	errAPI = "API Error Code %v: %q."
 )
 
 // Random.org Client.
