@@ -24,7 +24,8 @@ import (
 
 // Information related to the the usage of a given API key.
 type Usage struct {
-	// A string indicating the API key's current status, which may be stopped, paused or running. An API key must be running for it to be able to serve requests.
+	// A string indicating the API key's current status, which may be stopped, paused or running.
+	// An API key must be running for it to be able to serve requests.
 	Status string
 	// A timestamp at which the API key was created.
 	CreationTime time.Time
