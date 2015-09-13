@@ -109,6 +109,13 @@ func (r *RandomOrg) invokeRequest(method string, params map[string]interface{}) 
 
 // Generate n number of random integers in the range from min to max.
 func (r *RandomOrg) GenerateIntegers(n, min, max int64) ([]int64, error) {
+	if ( n < 1 || n > 1e4 ) {
+		return nil, ErrParamRage
+	}
+	if ( min < -1e9 || min > 1e9 || max < -1e9 || max > 1e9 ) {
+		return nil, ErrParamRage
+	}
+
 	params := map[string]interface{}{
 		"n":   n,
 		"min": min,
