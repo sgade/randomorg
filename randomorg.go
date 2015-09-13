@@ -65,9 +65,12 @@ func (r *RandomOrg) jsonMap(json map[string]interface{}, key string) (map[string
 }
 
 func (r *RandomOrg) invokeRequest(method string, params map[string]interface{}) (map[string]interface{}, error) {
+	// always append api key
 	params["apiKey"] = r.apiKey
 
+	// generate request UUID
 	requestUUID := uuid.NewUUID().String()
+	// build request body
 	requestBody := map[string]interface{}{
 		"jsonrpc": "2.0",
 		"method":  method,
@@ -105,38 +108,4 @@ func (r *RandomOrg) invokeRequest(method string, params map[string]interface{}) 
 	}
 
 	return responseBody["result"].(map[string]interface{}), nil
-}
-
-// Generate n number of random integers in the range from min to max.
-func (r *RandomOrg) GenerateIntegers(n, min, max int64) ([]int64, error) {
-	if ( n < 1 || n > 1e4 ) {
-		return nil, ErrParamRage
-	}
-	if ( min < -1e9 || min > 1e9 || max < -1e9 || max > 1e9 ) {
-		return nil, ErrParamRage
-	}
-
-	params := map[string]interface{}{
-		"n":   n,
-		"min": min,
-		"max": max,
-	}
-
-	result, err := r.invokeRequest("generateIntegers", params)
-	if err != nil {
-		return nil, err
-	}
-	random, err := r.jsonMap(result, "random")
-	if err != nil {
-		return nil, err
-	}
-	data := random["data"].([]interface{})
-
-	ints := make([]int64, len(data))
-	for i, dataItem := range data {
-		f := dataItem.(float64)
-		ints[i] = int64(f)
-	}
-
-	return ints, nil
 }
