@@ -22,7 +22,7 @@ var (
 	// Error with the response json
 	ErrJsonFormat = errors.New("could not get key from given json")
 	// Invalid parameter range
-	ErrParamRage = errors.New("invalid parameter range")
+	ErrParamRange = errors.New("invalid parameter range")
 )
 
 // Random.org Client.

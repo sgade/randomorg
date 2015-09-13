@@ -22,10 +22,10 @@ func (r *Random) requestCommand(method string, params map[string]interface{}) ([
 // Generate n number of random integers in the range from min to max.
 func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
   if ( n < 1 || n > 1e4 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
   if ( min < -1e9 || min > 1e9 || max < -1e9 || max > 1e9 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
 
   params := map[string]interface{}{
@@ -51,10 +51,10 @@ func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 // GenerateDecimalFractions generates n number of decimal fractions with decimalPlaces number of decimal places.
 func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, error) {
   if ( n < 1 || n > 1e4 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
   if ( decimalPlaces < 1 || decimalPlaces > 20 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
 
   params := map[string]interface{} {
@@ -78,16 +78,16 @@ func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, erro
 // GenerateGaussians generates true random numbers from a Gaussian distribution.
 func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits int) ([]float64, error) {
   if ( n < 1 || n > 1e4 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
   if ( mean < -1e6 || mean > 1e6 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
   if ( standardDeviation < -1e6 || standardDeviation > 1e6 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
   if (significantDigits < 2 || significantDigits > 20 ) {
-    return nil, ErrParamRage
+    return nil, ErrParamRange
   }
 
   params := map[string]interface{} {
