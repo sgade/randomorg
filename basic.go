@@ -163,3 +163,30 @@ func (r *Random) GenerateUUIDs(n int) ([]string, error) {
 
   return uuids, nil
 }
+
+// GenerateBlobs generates n random blobs of size.
+func (r *Random) GenerateBlobs(n, size int) ([]string, error) {
+  if ( n < 1 || n > 100 ) {
+    return nil, ErrParamRange
+  }
+  if ( size < 1 || size > 1048576 || size % 8 != 0 ) {
+    return nil, ErrParamRange
+  }
+
+  params := map[string]interface{} {
+    "n": n,
+    "size": size,
+  }
+
+  values, err := r.requestCommand("generateBlobs", params)
+  if err != nil {
+    return nil, err
+  }
+
+  blobs := make([]string, len(values))
+  for i, value := range values {
+    blobs[i] = value.(string)
+  }
+
+  return blobs, nil
+}
