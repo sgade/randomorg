@@ -32,7 +32,7 @@ type Usage struct {
 	// An integer containing the (estimated) number of remaining true random bits available to the client.
 	BitsLeft int
 	// An integer containing the (estimated) number of remaining API requests available to the client.
-	RequestLeft int
+	RequestsLeft int
 	// An integer containing the number of bits used by this API key since it was created.
 	TotalBits int
 	// An integer containing the number of requests used by this API key since it was created.
@@ -81,7 +81,7 @@ func (r *Random) parseAndSaveUsage(json map[string]interface{}) {
 
 	requestsLeft, _ := json["requestsLeft"]
 	if requestsLeft != nil {
-		usage.RequestLeft = int(requestsLeft.(float64))
+		usage.RequestsLeft = int(requestsLeft.(float64))
 	} else {
 		isComplete = false
 	}
