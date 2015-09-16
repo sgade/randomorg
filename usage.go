@@ -65,7 +65,6 @@ func (r *Random) parseAndSaveUsage(json map[string]interface{}) {
 		if err == nil {
 			usage.CreationTime = creationTime
 		} else {
-			panic(err)
 			isComplete = false
 		}
 	} else {
