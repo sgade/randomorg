@@ -18,6 +18,7 @@
 // Package randomorg is a Random.org API client as described at https://api.random.org/json-rpc/1/.
 // This is a third-party client. See https://github.com/sgade/randomorg.
 // For any method documentation you should take a look at the official API documentation.
+// An API key can be aquired here: https://api.random.org/api-keys/beta.
 package randomorg
 
 import (
