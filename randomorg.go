@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -76,6 +77,34 @@ func NewRandom(apiKey string) *Random {
 	}
 
 	return &random
+}
+
+// SetProxy sets the proxy for requests indicated by the url.
+func (r *Random) SetProxy(proxyURL *url.URL) error {
+	t := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+	}
+
+	r.client = &http.Client{
+		Transport: t,
+	}
+
+	return nil
+}
+
+// SetProxyAddress sets the proxy for requets indicated by the url/address string.
+func (r *Random) SetProxyAddress(proxyAddress string) error {
+	var url *url.URL
+
+	if proxyAddress != "" {
+		var err error
+		url, err = url.Parse(proxyAddress)
+		if err != nil {
+			return err
+		}
+	}
+
+	return r.SetProxy(url)
 }
 
 // Get the json object with the given key from the given json object.
