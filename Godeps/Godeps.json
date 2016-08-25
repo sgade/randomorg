@@ -1,0 +1,12 @@
+{
+	"ImportPath": "github.com/sgade/randomorg",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v74",
+	"Deps": [
+		{
+			"ImportPath": "github.com/pborman/uuid",
+			"Comment": "v1.0-15-gb984ec7",
+			"Rev": "b984ec7fa9ff9e428bd0cf0abf429384dfbe3e37"
+		}
+	]
+}
