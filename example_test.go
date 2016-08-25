@@ -2,6 +2,7 @@ package randomorg_test
 
 import (
 	"fmt"
+
 	"github.com/sgade/randomorg"
 )
 

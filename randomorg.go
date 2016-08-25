@@ -23,7 +23,6 @@ package randomorg
 
 import (
 	"bytes"
-	"code.google.com/p/go-uuid/uuid"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -31,6 +30,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/pborman/uuid"
 )
 
 // Private constants
