@@ -15,10 +15,10 @@
  *
  */
 
-// Package randomorg is a Random.org API client as described at https://api.random.org/json-rpc/1/.
+// Package randomorg is a Random.org API client as described at https://api.random.org/json-rpc/2.
 // This is a third-party client. See https://github.com/sgade/randomorg.
 // For any method documentation you should take a look at the official API documentation.
-// An API key can be aquired here: https://api.random.org/api-keys/beta.
+// An API key can be acquired here: https://api.random.org/dashboard.
 package randomorg
 
 import (
@@ -37,7 +37,7 @@ import (
 // Private constants
 const (
 	// The Random.org API request endpoint URL
-	requestEndpoint = "https://api.random.org/json-rpc/1/invoke"
+	requestEndpoint = "https://api.random.org/json-rpc/2/invoke"
 	// Example time format for ISO 8601
 	iso8601Example = time.RFC3339Nano //"2013-02-20 17:53:40Z"
 	// API Error template string
@@ -56,7 +56,7 @@ var (
 )
 
 // A Random defines a Random.org API Client.
-// For more information, see https://api.random.org/json-rpc/1/.
+// For more information, see https://api.random.org/json-rpc/2.
 type Random struct {
 	// the api key
 	apiKey string
@@ -148,7 +148,7 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 		return nil, err
 	}
 
-	req.Header.Add("Content-Type", "application/json-rpc")
+	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 
 	resp, err := r.client.Do(req)
@@ -164,6 +164,10 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 	responseBody := make(map[string]interface{})
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
+		if len(body) > 0 {
+			err = errors.New(string(body))
+		}
+
 		return nil, err
 	}
 
