@@ -28,7 +28,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/google/uuid"
@@ -67,7 +66,7 @@ type Random struct {
 }
 
 // NewRandom creates a new Random client with the given apiKey.
-func NewRandom(apiKey string) *Random {
+func NewRandom(apiKey string, client *http.Client) *Random {
 	// check the api key
 	if apiKey == "" {
 		panic(ErrAPIKey)
@@ -75,38 +74,10 @@ func NewRandom(apiKey string) *Random {
 
 	random := Random{
 		apiKey: apiKey,
-		client: &http.Client{},
+		client: client,
 	}
 
 	return &random
-}
-
-// SetProxy sets the proxy for requests indicated by the url.
-func (r *Random) SetProxy(proxyURL *url.URL) error {
-	t := &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-	}
-
-	r.client = &http.Client{
-		Transport: t,
-	}
-
-	return nil
-}
-
-// SetProxyAddress sets the proxy for requets indicated by the url/address string.
-func (r *Random) SetProxyAddress(proxyAddress string) error {
-	var url *url.URL
-
-	if proxyAddress != "" {
-		var err error
-		url, err = url.Parse(proxyAddress)
-		if err != nil {
-			return err
-		}
-	}
-
-	return r.SetProxy(url)
 }
 
 // Get the json object with the given key from the given json object.
