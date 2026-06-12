@@ -26,7 +26,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -110,13 +110,13 @@ func (r *Random) SetProxyAddress(proxyAddress string) error {
 }
 
 // Get the json object with the given key from the given json object.
-func (r *Random) jsonMap(json map[string]interface{}, key string) (map[string]interface{}, error) {
+func (r *Random) jsonMap(json map[string]any, key string) (map[string]any, error) {
 	value := json[key]
 	if value == nil {
 		return nil, ErrJSONFormat
 	}
 
-	newMap, ok := value.(map[string]interface{})
+	newMap, ok := value.(map[string]any)
 	if !ok {
 		return nil, ErrJSONFormat
 	}
@@ -124,7 +124,7 @@ func (r *Random) jsonMap(json map[string]interface{}, key string) (map[string]in
 	return newMap, nil
 }
 
-func (r *Random) invokeRequest(method string, params map[string]interface{}) (map[string]interface{}, error) {
+func (r *Random) invokeRequest(method string, params map[string]any) (map[string]any, error) {
 	// always append api key
 	params["apiKey"] = r.apiKey
 
@@ -135,7 +135,7 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 	}
 
 	// build request body
-	requestBody := map[string]interface{}{
+	requestBody := map[string]any{
 		"jsonrpc": "2.0",
 		"method":  method,
 		"params":  params,
@@ -161,11 +161,11 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	responseBody := make(map[string]interface{})
+	responseBody := make(map[string]any)
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
 		if len(body) > 0 {
@@ -192,7 +192,7 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 }
 
 // requestCommand invokes the request and parses all information down to the requested data block.
-func (r *Random) requestCommand(method string, params map[string]interface{}) ([]interface{}, error) {
+func (r *Random) requestCommand(method string, params map[string]any) ([]any, error) {
 	result, err := r.invokeRequest(method, params)
 	if err != nil {
 		return nil, err
@@ -205,7 +205,7 @@ func (r *Random) requestCommand(method string, params map[string]interface{}) ([
 		return nil, err
 	}
 
-	data := random["data"].([]interface{})
+	data := random["data"].([]any)
 
 	return data, nil
 }

@@ -29,7 +29,7 @@ func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params := map[string]any{
 		"n":   n,
 		"min": min,
 		"max": max,
@@ -58,7 +58,7 @@ func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, erro
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params := map[string]any{
 		"n":             n,
 		"decimalPlaces": decimalPlaces,
 	}
@@ -91,7 +91,7 @@ func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params := map[string]any{
 		"n":                 n,
 		"mean":              mean,
 		"standardDeviation": standardDeviation,
@@ -123,7 +123,7 @@ func (r *Random) GenerateStrings(n, length int, characters string) ([]string, er
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params := map[string]any{
 		"n":          n,
 		"length":     length,
 		"characters": characters,
@@ -148,7 +148,7 @@ func (r *Random) GenerateUUIDs(n int) ([]string, error) {
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params := map[string]any{
 		"n": n,
 	}
 
@@ -174,7 +174,7 @@ func (r *Random) GenerateBlobs(n, size int) ([]string, error) {
 		return nil, ErrParamRange
 	}
 
-	params := map[string]interface{}{
+	params := map[string]any{
 		"n":    n,
 		"size": size,
 	}

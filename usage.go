@@ -41,7 +41,7 @@ type Usage struct {
 	isComplete bool
 }
 
-func (r *Random) parseAndSaveUsage(json map[string]interface{}) {
+func (r *Random) parseAndSaveUsage(json map[string]any) {
 	usage := &Usage{}
 	if r.usage != nil {
 		usage = r.usage
@@ -105,7 +105,7 @@ func (r *Random) parseAndSaveUsage(json map[string]interface{}) {
 
 // GetUsage returns information related to the the usage of a given API key.
 func (r *Random) GetUsage() (Usage, error) {
-	params := map[string]interface{}{}
+	params := map[string]any{}
 
 	_, err := r.requestCommand("getUsage", params)
 	if err != nil && err != ErrJSONFormat {
