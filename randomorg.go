@@ -52,6 +52,8 @@ var (
 	// ErrParamRange is returned when invalid parameter ranges where given to a method.
 	// See the method API documentation for further details.
 	ErrParamRange = errors.New("invalid parameter range")
+	// ErrHTTPStatus is the error returned when the server's HTTP response status is unexpected.
+	ErrHTTPStatus = errors.New("unexpected HTTP status")
 )
 
 // A Random defines a Random.org API Client.
@@ -132,6 +134,10 @@ func (r *Random) invokeRequest(method string, params map[string]any) (map[string
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		return nil, ErrHTTPStatus
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -153,6 +159,7 @@ func (r *Random) invokeRequest(method string, params map[string]any) (map[string
 			return nil, err
 		}
 
+		// see https://api.random.org/json-rpc/2/error-codes
 		errorCode, _ := error["code"]
 		errorMessage, _ := error["message"]
 		err = fmt.Errorf(errAPI, errorCode, errorMessage)
