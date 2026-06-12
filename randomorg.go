@@ -31,7 +31,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/pborman/uuid"
+	"github.com/google/uuid"
 )
 
 // Private constants
@@ -129,13 +129,17 @@ func (r *Random) invokeRequest(method string, params map[string]interface{}) (ma
 	params["apiKey"] = r.apiKey
 
 	// generate request UUID
-	requestUUID := uuid.NewUUID().String()
+	requestUUID, err := uuid.NewUUID()
+	if err != nil {
+		return nil, err
+	}
+
 	// build request body
 	requestBody := map[string]interface{}{
 		"jsonrpc": "2.0",
 		"method":  method,
 		"params":  params,
-		"id":      requestUUID,
+		"id":      requestUUID.String(),
 	}
 	requestBodyJSON, err := json.Marshal(requestBody)
 	if err != nil {
