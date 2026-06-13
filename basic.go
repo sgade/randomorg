@@ -18,7 +18,7 @@
 package randomorg
 
 // Basic commands
-// see https://api.random.org/json-rpc/2/basic
+// see https://api.random.org/json-rpc/4/basic
 
 // GenerateIntegers generates n number of random integers in the range from min to max.
 func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
