@@ -50,10 +50,10 @@ type Random struct {
 }
 
 // NewRandom creates a new Random client with the given apiKey.
-func NewRandom(apiKey string, client *http.Client) *Random {
+func NewRandom(apiKey string, client *http.Client) (*Random, error) {
 	// check the api key
 	if apiKey == "" {
-		panic(ErrAPIKey)
+		return nil, ErrAPIKey
 	}
 
 	random := Random{
@@ -61,7 +61,7 @@ func NewRandom(apiKey string, client *http.Client) *Random {
 		client: client,
 	}
 
-	return &random
+	return &random, nil
 }
 
 // Get the json object with the given key from the given json object.
