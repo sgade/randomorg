@@ -1,6 +1,7 @@
 package randomorg
 
 import (
+	"context"
 	"strings"
 	"time"
 )
@@ -87,22 +88,22 @@ func (r *Random) parseAndSaveUsage(json map[string]any) {
 }
 
 // GetUsage returns information related to the the usage of a given API key.
-func (r *Random) GetUsage() (Usage, error) {
+func (r *Random) GetUsage(ctx context.Context) (Usage, error) {
 	params := map[string]any{}
 
-	_, err := r.requestCommand("getUsage", params)
+	_, err := r.requestCommand(ctx, "getUsage", params)
 	if err != nil && err != ErrJSONFormat {
 		return Usage{}, err
 	}
 
-	return r.Usage()
+	return r.Usage(ctx)
 }
 
 // Usage returns the API usage. This will return a cached version of the last request, if there is one.
-func (r *Random) Usage() (Usage, error) {
+func (r *Random) Usage(ctx context.Context) (Usage, error) {
 	if r.usage != nil && r.usage.isComplete {
 		return *r.usage, nil
 	}
 
-	return r.GetUsage()
+	return r.GetUsage(ctx)
 }

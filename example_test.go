@@ -1,6 +1,7 @@
 package randomorg_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -27,6 +28,6 @@ func ExampleRandom_GenerateIntegers() {
 		panic(err)
 	}
 	// generates a random value
-	value, _ := random.GenerateIntegers(1, 0, 10)
+	value, _ := random.GenerateIntegers(context.Background(), 1, 0, 10)
 	fmt.Printf("Random value: %v\n", value)
 }

@@ -1,10 +1,12 @@
 package randomorg
 
+import "context"
+
 // Basic commands
 // see https://api.random.org/json-rpc/4/basic
 
 // GenerateIntegers generates n number of random integers in the range from min to max.
-func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
+func (r *Random) GenerateIntegers(ctx context.Context, n int, min, max int64) ([]int64, error) {
 	if n < 1 || n > 1e4 {
 		return nil, ErrParamRange
 	}
@@ -18,7 +20,7 @@ func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 		"max": max,
 	}
 
-	values, err := r.requestCommand("generateIntegers", params)
+	values, err := r.requestCommand(ctx, "generateIntegers", params)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +35,7 @@ func (r *Random) GenerateIntegers(n int, min, max int64) ([]int64, error) {
 }
 
 // GenerateDecimalFractions generates n number of decimal fractions with decimalPlaces number of decimal places.
-func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, error) {
+func (r *Random) GenerateDecimalFractions(ctx context.Context, n, decimalPlaces int) ([]float64, error) {
 	if n < 1 || n > 1e4 {
 		return nil, ErrParamRange
 	}
@@ -46,7 +48,7 @@ func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, erro
 		"decimalPlaces": decimalPlaces,
 	}
 
-	values, err := r.requestCommand("generateDecimalFractions", params)
+	values, err := r.requestCommand(ctx, "generateDecimalFractions", params)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +62,7 @@ func (r *Random) GenerateDecimalFractions(n, decimalPlaces int) ([]float64, erro
 }
 
 // GenerateGaussians generates true random numbers from a Gaussian distribution.
-func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits int) ([]float64, error) {
+func (r *Random) GenerateGaussians(ctx context.Context, n, mean, standardDeviation, significantDigits int) ([]float64, error) {
 	if n < 1 || n > 1e4 {
 		return nil, ErrParamRange
 	}
@@ -81,7 +83,7 @@ func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits
 		"significantDigits": significantDigits,
 	}
 
-	values, err := r.requestCommand("generateGaussians", params)
+	values, err := r.requestCommand(ctx, "generateGaussians", params)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +97,7 @@ func (r *Random) GenerateGaussians(n, mean, standardDeviation, significantDigits
 }
 
 // GenerateStrings generates n random strings with the given length composed from the characters.
-func (r *Random) GenerateStrings(n, length int, characters string) ([]string, error) {
+func (r *Random) GenerateStrings(ctx context.Context, n, length int, characters string) ([]string, error) {
 	if n < 1 || n > 1e4 {
 		return nil, ErrParamRange
 	}
@@ -112,7 +114,7 @@ func (r *Random) GenerateStrings(n, length int, characters string) ([]string, er
 		"characters": characters,
 	}
 
-	values, err := r.requestCommand("generateStrings", params)
+	values, err := r.requestCommand(ctx, "generateStrings", params)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +128,7 @@ func (r *Random) GenerateStrings(n, length int, characters string) ([]string, er
 }
 
 // GenerateUUIDs generates n random version 4 Universally Unique Identifiers (see section 4.4 of RFC 4122)
-func (r *Random) GenerateUUIDs(n int) ([]string, error) {
+func (r *Random) GenerateUUIDs(ctx context.Context, n int) ([]string, error) {
 	if n < 1 || n > 1e3 {
 		return nil, ErrParamRange
 	}
@@ -135,7 +137,7 @@ func (r *Random) GenerateUUIDs(n int) ([]string, error) {
 		"n": n,
 	}
 
-	values, err := r.requestCommand("generateUUIDs", params)
+	values, err := r.requestCommand(ctx, "generateUUIDs", params)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +151,7 @@ func (r *Random) GenerateUUIDs(n int) ([]string, error) {
 }
 
 // GenerateBlobs generates n random blobs of size.
-func (r *Random) GenerateBlobs(n, size int) ([]string, error) {
+func (r *Random) GenerateBlobs(ctx context.Context, n, size int) ([]string, error) {
 	if n < 1 || n > 100 {
 		return nil, ErrParamRange
 	}
@@ -162,7 +164,7 @@ func (r *Random) GenerateBlobs(n, size int) ([]string, error) {
 		"size": size,
 	}
 
-	values, err := r.requestCommand("generateBlobs", params)
+	values, err := r.requestCommand(ctx, "generateBlobs", params)
 	if err != nil {
 		return nil, err
 	}

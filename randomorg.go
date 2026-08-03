@@ -6,6 +6,7 @@ package randomorg
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -79,7 +80,7 @@ func (r *Random) jsonMap(json map[string]any, key string) (map[string]any, error
 	return newMap, nil
 }
 
-func (r *Random) invokeRequest(method string, params map[string]any) (map[string]any, error) {
+func (r *Random) invokeRequest(ctx context.Context, method string, params map[string]any) (map[string]any, error) {
 	// always append api key
 	params["apiKey"] = r.apiKey
 
@@ -102,7 +103,7 @@ func (r *Random) invokeRequest(method string, params map[string]any) (map[string
 	}
 	requestBodyReader := bytes.NewReader(requestBodyJSON)
 
-	req, err := http.NewRequest("POST", requestEndpoint, requestBodyReader)
+	req, err := http.NewRequestWithContext(ctx, "POST", requestEndpoint, requestBodyReader)
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +153,8 @@ func (r *Random) invokeRequest(method string, params map[string]any) (map[string
 }
 
 // requestCommand invokes the request and parses all information down to the requested data block.
-func (r *Random) requestCommand(method string, params map[string]any) ([]any, error) {
-	result, err := r.invokeRequest(method, params)
+func (r *Random) requestCommand(ctx context.Context, method string, params map[string]any) ([]any, error) {
+	result, err := r.invokeRequest(ctx, method, params)
 	if err != nil {
 		return nil, err
 	}
