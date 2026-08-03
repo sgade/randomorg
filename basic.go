@@ -43,10 +43,10 @@ type generateIntegersParams struct {
 
 // GenerateIntegers generates n number of random integers in the range from min to max.
 func (r *Random) GenerateIntegers(ctx context.Context, n int, min, max int64) ([]int64, error) {
-	if n < 1 || n > 1e4 {
+	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
-	if min < -1e9 || min > 1e9 || max < -1e9 || max > 1e9 {
+	if min < -1_000_000_000 || min > 1_000_000_000 || max < -1_000_000_000 || max > 1_000_000_000 {
 		return nil, ErrParamRange
 	}
 
@@ -68,7 +68,7 @@ type generateDecimalFractionsParams struct {
 
 // GenerateDecimalFractions generates n number of decimal fractions with decimalPlaces number of decimal places.
 func (r *Random) GenerateDecimalFractions(ctx context.Context, n, decimalPlaces int) ([]float64, error) {
-	if n < 1 || n > 1e4 {
+	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
 	if decimalPlaces < 1 || decimalPlaces > 20 {
@@ -94,13 +94,13 @@ type generateGaussiansParams struct {
 
 // GenerateGaussians generates true random numbers from a Gaussian distribution.
 func (r *Random) GenerateGaussians(ctx context.Context, n, mean, standardDeviation, significantDigits int) ([]float64, error) {
-	if n < 1 || n > 1e4 {
+	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
-	if mean < -1e6 || mean > 1e6 {
+	if mean < -1_000_000 || mean > 1_000_000 {
 		return nil, ErrParamRange
 	}
-	if standardDeviation < -1e6 || standardDeviation > 1e6 {
+	if standardDeviation < -1_000_000 || standardDeviation > 1_000_000 {
 		return nil, ErrParamRange
 	}
 	if significantDigits < 2 || significantDigits > 20 {
@@ -127,7 +127,7 @@ type generateStringsParams struct {
 
 // GenerateStrings generates n random strings with the given length composed from the characters.
 func (r *Random) GenerateStrings(ctx context.Context, n, length int, characters string) ([]string, error) {
-	if n < 1 || n > 1e4 {
+	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
 	if length < 1 || length > 20 {
@@ -154,7 +154,7 @@ type generateUUIDsParams struct {
 
 // GenerateUUIDs generates n random version 4 Universally Unique Identifiers (see section 4.4 of RFC 4122)
 func (r *Random) GenerateUUIDs(ctx context.Context, n int) ([]string, error) {
-	if n < 1 || n > 1e3 {
+	if n < 1 || n > 1_000 {
 		return nil, ErrParamRange
 	}
 

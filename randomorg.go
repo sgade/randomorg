@@ -128,8 +128,8 @@ func invokeRequest[R any](ctx context.Context, r *Random, method string, params 
 		return zero, err
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := r.client.Do(req)
 	if err != nil {
