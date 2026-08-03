@@ -25,29 +25,40 @@ type Usage struct {
 	isComplete bool
 }
 
-func (r *Random) parseAndSaveUsage(json map[string]any) {
+// usageFields are the usage-related fields present, wholly or partially, in
+// nearly every Random.org API response. Pointer fields distinguish "absent"
+// from "present with the zero value".
+type usageFields struct {
+	Status        *string `json:"status"`
+	CreationTime  *string `json:"creationTime"`
+	BitsLeft      *int    `json:"bitsLeft"`
+	RequestsLeft  *int    `json:"requestsLeft"`
+	TotalBits     *int    `json:"totalBits"`
+	TotalRequests *int    `json:"totalRequests"`
+}
+
+// mergeUsage merges fields into the cached Usage, tracking whether every
+// field required for a complete Usage was present in this response.
+func (r *Random) mergeUsage(fields usageFields) {
 	r.usageMutex.Lock()
 	defer r.usageMutex.Unlock()
 
-	usage := &Usage{}
-	if r.usage != nil {
-		usage = r.usage
+	usage := r.usage
+	if usage == nil {
+		usage = &Usage{}
 	}
 
 	isComplete := true
 
-	status, _ := json["status"]
-	if status != nil {
-		usage.Status = status.(string)
+	if fields.Status != nil {
+		usage.Status = *fields.Status
 	} else {
 		isComplete = false
 	}
 
-	creationTimeValue, _ := json["creationTime"]
-	if creationTimeValue != nil {
-		creationTimeString := creationTimeValue.(string)
+	if fields.CreationTime != nil {
 		// fix so that we can parse it
-		creationTimeString = strings.Replace(creationTimeString, " ", "T", 1)
+		creationTimeString := strings.Replace(*fields.CreationTime, " ", "T", 1)
 		creationTime, err := time.Parse(iso8601Example, creationTimeString)
 		if err == nil {
 			usage.CreationTime = creationTime
@@ -58,30 +69,26 @@ func (r *Random) parseAndSaveUsage(json map[string]any) {
 		isComplete = false
 	}
 
-	bitsLeft, _ := json["bitsLeft"]
-	if bitsLeft != nil {
-		usage.BitsLeft = int(bitsLeft.(float64))
+	if fields.BitsLeft != nil {
+		usage.BitsLeft = *fields.BitsLeft
 	} else {
 		isComplete = false
 	}
 
-	requestsLeft, _ := json["requestsLeft"]
-	if requestsLeft != nil {
-		usage.RequestsLeft = int(requestsLeft.(float64))
+	if fields.RequestsLeft != nil {
+		usage.RequestsLeft = *fields.RequestsLeft
 	} else {
 		isComplete = false
 	}
 
-	totalBits, _ := json["totalBits"]
-	if totalBits != nil {
-		usage.TotalBits = int(totalBits.(float64))
+	if fields.TotalBits != nil {
+		usage.TotalBits = *fields.TotalBits
 	} else {
 		isComplete = false
 	}
 
-	totalRequests, _ := json["totalRequests"]
-	if totalRequests != nil {
-		usage.TotalRequests = int(totalRequests.(float64))
+	if fields.TotalRequests != nil {
+		usage.TotalRequests = *fields.TotalRequests
 	} else {
 		isComplete = false
 	}
@@ -92,19 +99,17 @@ func (r *Random) parseAndSaveUsage(json map[string]any) {
 
 // GetUsage returns information related to the the usage of a given API key.
 func (r *Random) GetUsage(ctx context.Context) (Usage, error) {
-	params := map[string]any{}
+	params := baseParams{APIKey: r.apiKey}
 
-	_, err := r.requestCommand(ctx, "getUsage", params)
-	if err != nil && err != ErrJSONFormat {
+	fields, err := invokeRequest[usageFields](ctx, r, "getUsage", params)
+	if err != nil {
 		return Usage{}, err
 	}
 
+	r.mergeUsage(fields)
+
 	r.usageMutex.Lock()
 	defer r.usageMutex.Unlock()
-
-	if r.usage == nil {
-		return Usage{}, ErrJSONFormat
-	}
 
 	return *r.usage, nil
 }

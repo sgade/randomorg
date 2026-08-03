@@ -5,6 +5,42 @@ import "context"
 // Basic commands
 // see https://api.random.org/json-rpc/4/basic
 
+// randomData is the "random" payload returned by every generateX method.
+type randomData[T any] struct {
+	Data           []T    `json:"data"`
+	CompletionTime string `json:"completionTime"`
+}
+
+// generateResult is the JSON-RPC result payload of every generateX method.
+type generateResult[T any] struct {
+	Random randomData[T] `json:"random"`
+	usageFields
+}
+
+// generate invokes method, decodes its data payload into a []T, and merges
+// the response's usage-related fields into the client's usage cache.
+func generate[T any](ctx context.Context, r *Random, method string, params any) ([]T, error) {
+	result, err := invokeRequest[generateResult[T]](ctx, r, method, params)
+	if err != nil {
+		return nil, err
+	}
+
+	r.mergeUsage(result.usageFields)
+
+	if result.Random.Data == nil {
+		return nil, ErrJSONFormat
+	}
+
+	return result.Random.Data, nil
+}
+
+type generateIntegersParams struct {
+	baseParams
+	N   int   `json:"n"`
+	Min int64 `json:"min"`
+	Max int64 `json:"max"`
+}
+
 // GenerateIntegers generates n number of random integers in the range from min to max.
 func (r *Random) GenerateIntegers(ctx context.Context, n int, min, max int64) ([]int64, error) {
 	if n < 1 || n > 1e4 {
@@ -14,24 +50,20 @@ func (r *Random) GenerateIntegers(ctx context.Context, n int, min, max int64) ([
 		return nil, ErrParamRange
 	}
 
-	params := map[string]any{
-		"n":   n,
-		"min": min,
-		"max": max,
+	params := generateIntegersParams{
+		baseParams: baseParams{APIKey: r.apiKey},
+		N:          n,
+		Min:        min,
+		Max:        max,
 	}
 
-	values, err := r.requestCommand(ctx, "generateIntegers", params)
-	if err != nil {
-		return nil, err
-	}
+	return generate[int64](ctx, r, "generateIntegers", params)
+}
 
-	ints := make([]int64, len(values))
-	for i, value := range values {
-		f := value.(float64)
-		ints[i] = int64(f)
-	}
-
-	return ints, nil
+type generateDecimalFractionsParams struct {
+	baseParams
+	N             int `json:"n"`
+	DecimalPlaces int `json:"decimalPlaces"`
 }
 
 // GenerateDecimalFractions generates n number of decimal fractions with decimalPlaces number of decimal places.
@@ -43,22 +75,21 @@ func (r *Random) GenerateDecimalFractions(ctx context.Context, n, decimalPlaces 
 		return nil, ErrParamRange
 	}
 
-	params := map[string]any{
-		"n":             n,
-		"decimalPlaces": decimalPlaces,
+	params := generateDecimalFractionsParams{
+		baseParams:    baseParams{APIKey: r.apiKey},
+		N:             n,
+		DecimalPlaces: decimalPlaces,
 	}
 
-	values, err := r.requestCommand(ctx, "generateDecimalFractions", params)
-	if err != nil {
-		return nil, err
-	}
+	return generate[float64](ctx, r, "generateDecimalFractions", params)
+}
 
-	decimals := make([]float64, len(values))
-	for i, value := range values {
-		decimals[i] = value.(float64)
-	}
-
-	return decimals, nil
+type generateGaussiansParams struct {
+	baseParams
+	N                 int `json:"n"`
+	Mean              int `json:"mean"`
+	StandardDeviation int `json:"standardDeviation"`
+	SignificantDigits int `json:"significantDigits"`
 }
 
 // GenerateGaussians generates true random numbers from a Gaussian distribution.
@@ -76,24 +107,22 @@ func (r *Random) GenerateGaussians(ctx context.Context, n, mean, standardDeviati
 		return nil, ErrParamRange
 	}
 
-	params := map[string]any{
-		"n":                 n,
-		"mean":              mean,
-		"standardDeviation": standardDeviation,
-		"significantDigits": significantDigits,
+	params := generateGaussiansParams{
+		baseParams:        baseParams{APIKey: r.apiKey},
+		N:                 n,
+		Mean:              mean,
+		StandardDeviation: standardDeviation,
+		SignificantDigits: significantDigits,
 	}
 
-	values, err := r.requestCommand(ctx, "generateGaussians", params)
-	if err != nil {
-		return nil, err
-	}
+	return generate[float64](ctx, r, "generateGaussians", params)
+}
 
-	gaussians := make([]float64, len(values))
-	for i, value := range values {
-		gaussians[i] = value.(float64)
-	}
-
-	return gaussians, nil
+type generateStringsParams struct {
+	baseParams
+	N          int    `json:"n"`
+	Length     int    `json:"length"`
+	Characters string `json:"characters"`
 }
 
 // GenerateStrings generates n random strings with the given length composed from the characters.
@@ -108,23 +137,19 @@ func (r *Random) GenerateStrings(ctx context.Context, n, length int, characters 
 		return nil, ErrParamRange
 	}
 
-	params := map[string]any{
-		"n":          n,
-		"length":     length,
-		"characters": characters,
+	params := generateStringsParams{
+		baseParams: baseParams{APIKey: r.apiKey},
+		N:          n,
+		Length:     length,
+		Characters: characters,
 	}
 
-	values, err := r.requestCommand(ctx, "generateStrings", params)
-	if err != nil {
-		return nil, err
-	}
+	return generate[string](ctx, r, "generateStrings", params)
+}
 
-	strings := make([]string, len(values))
-	for i, value := range values {
-		strings[i] = value.(string)
-	}
-
-	return strings, nil
+type generateUUIDsParams struct {
+	baseParams
+	N int `json:"n"`
 }
 
 // GenerateUUIDs generates n random version 4 Universally Unique Identifiers (see section 4.4 of RFC 4122)
@@ -133,21 +158,18 @@ func (r *Random) GenerateUUIDs(ctx context.Context, n int) ([]string, error) {
 		return nil, ErrParamRange
 	}
 
-	params := map[string]any{
-		"n": n,
+	params := generateUUIDsParams{
+		baseParams: baseParams{APIKey: r.apiKey},
+		N:          n,
 	}
 
-	values, err := r.requestCommand(ctx, "generateUUIDs", params)
-	if err != nil {
-		return nil, err
-	}
+	return generate[string](ctx, r, "generateUUIDs", params)
+}
 
-	uuids := make([]string, len(values))
-	for i, value := range values {
-		uuids[i] = value.(string)
-	}
-
-	return uuids, nil
+type generateBlobsParams struct {
+	baseParams
+	N    int `json:"n"`
+	Size int `json:"size"`
 }
 
 // GenerateBlobs generates n random blobs of size.
@@ -159,20 +181,11 @@ func (r *Random) GenerateBlobs(ctx context.Context, n, size int) ([]string, erro
 		return nil, ErrParamRange
 	}
 
-	params := map[string]any{
-		"n":    n,
-		"size": size,
+	params := generateBlobsParams{
+		baseParams: baseParams{APIKey: r.apiKey},
+		N:          n,
+		Size:       size,
 	}
 
-	values, err := r.requestCommand(ctx, "generateBlobs", params)
-	if err != nil {
-		return nil, err
-	}
-
-	blobs := make([]string, len(values))
-	for i, value := range values {
-		blobs[i] = value.(string)
-	}
-
-	return blobs, nil
+	return generate[string](ctx, r, "generateBlobs", params)
 }

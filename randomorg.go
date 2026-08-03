@@ -68,47 +68,63 @@ func NewRandom(apiKey string, client *http.Client) (*Random, error) {
 	return &random, nil
 }
 
-// Get the json object with the given key from the given json object.
-func (r *Random) jsonMap(json map[string]any, key string) (map[string]any, error) {
-	value := json[key]
-	if value == nil {
-		return nil, ErrJSONFormat
-	}
-
-	newMap, ok := value.(map[string]any)
-	if !ok {
-		return nil, ErrJSONFormat
-	}
-
-	return newMap, nil
+// baseParams embeds the API key required by every Random.org API method.
+type baseParams struct {
+	APIKey string `json:"apiKey"`
 }
 
-func (r *Random) invokeRequest(ctx context.Context, method string, params map[string]any) (map[string]any, error) {
-	// always append api key
-	params["apiKey"] = r.apiKey
+// jsonRPCRequest is the envelope for every Random.org JSON-RPC 2.0 request.
+type jsonRPCRequest struct {
+	JSONRPC string `json:"jsonrpc"`
+	Method  string `json:"method"`
+	Params  any    `json:"params"`
+	ID      string `json:"id"`
+}
+
+// jsonRPCResponse is the envelope for every Random.org JSON-RPC 2.0 response.
+// R is the method-specific shape of a successful result.
+type jsonRPCResponse[R any] struct {
+	Result *R            `json:"result"`
+	Error  *jsonRPCError `json:"error"`
+}
+
+// jsonRPCError describes an error returned by the Random.org API.
+// See https://api.random.org/json-rpc/4/error-codes.
+type jsonRPCError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+func (e *jsonRPCError) Error() string {
+	return fmt.Sprintf(errAPI, e.Code, e.Message)
+}
+
+// invokeRequest sends method with params and decodes the JSON-RPC result into R.
+func invokeRequest[R any](ctx context.Context, r *Random, method string, params any) (R, error) {
+	var zero R
 
 	// generate request UUID
 	requestUUID, err := uuid.NewUUID()
 	if err != nil {
-		return nil, err
+		return zero, err
 	}
 
 	// build request body
-	requestBody := map[string]any{
-		"jsonrpc": "2.0",
-		"method":  method,
-		"params":  params,
-		"id":      requestUUID.String(),
+	requestBody := jsonRPCRequest{
+		JSONRPC: "2.0",
+		Method:  method,
+		Params:  params,
+		ID:      requestUUID.String(),
 	}
 	requestBodyJSON, err := json.Marshal(requestBody)
 	if err != nil {
-		return nil, err
+		return zero, err
 	}
 	requestBodyReader := bytes.NewReader(requestBodyJSON)
 
 	req, err := http.NewRequestWithContext(ctx, "POST", requestEndpoint, requestBodyReader)
 	if err != nil {
-		return nil, err
+		return zero, err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -116,60 +132,34 @@ func (r *Random) invokeRequest(ctx context.Context, method string, params map[st
 
 	resp, err := r.client.Do(req)
 	if err != nil {
-		return nil, err
+		return zero, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, ErrHTTPStatus
+		return zero, ErrHTTPStatus
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return zero, err
 	}
-	responseBody := make(map[string]any)
-	err = json.Unmarshal(body, &responseBody)
-	if err != nil {
+
+	var responseBody jsonRPCResponse[R]
+	if err := json.Unmarshal(body, &responseBody); err != nil {
 		if len(body) > 0 {
 			err = errors.New(string(body))
 		}
 
-		return nil, err
+		return zero, err
 	}
 
-	result, err := r.jsonMap(responseBody, "result")
-	if err != nil {
-		error, err := r.jsonMap(responseBody, "error")
-		if err != nil {
-			return nil, err
-		}
-
-		// see https://api.random.org/json-rpc/4/error-codes
-		errorCode, _ := error["code"]
-		errorMessage, _ := error["message"]
-		err = fmt.Errorf(errAPI, errorCode, errorMessage)
-		return nil, err
+	if responseBody.Error != nil {
+		return zero, responseBody.Error
+	}
+	if responseBody.Result == nil {
+		return zero, ErrJSONFormat
 	}
 
-	return result, nil
-}
-
-// requestCommand invokes the request and parses all information down to the requested data block.
-func (r *Random) requestCommand(ctx context.Context, method string, params map[string]any) ([]any, error) {
-	result, err := r.invokeRequest(ctx, method, params)
-	if err != nil {
-		return nil, err
-	}
-
-	r.parseAndSaveUsage(result)
-
-	random, err := r.jsonMap(result, "random")
-	if err != nil {
-		return nil, err
-	}
-
-	data := random["data"].([]any)
-
-	return data, nil
+	return *responseBody.Result, nil
 }
