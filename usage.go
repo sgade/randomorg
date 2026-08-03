@@ -99,7 +99,14 @@ func (r *Random) GetUsage(ctx context.Context) (Usage, error) {
 		return Usage{}, err
 	}
 
-	return r.Usage(ctx)
+	r.usageMutex.Lock()
+	defer r.usageMutex.Unlock()
+
+	if r.usage == nil {
+		return Usage{}, ErrJSONFormat
+	}
+
+	return *r.usage, nil
 }
 
 // Usage returns the API usage. This will return a cached version of the last request, if there is one.
