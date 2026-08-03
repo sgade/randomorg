@@ -84,18 +84,19 @@ type jsonRPCRequest struct {
 // jsonRPCResponse is the envelope for every Random.org JSON-RPC 2.0 response.
 // R is the method-specific shape of a successful result.
 type jsonRPCResponse[R any] struct {
-	Result *R            `json:"result"`
-	Error  *jsonRPCError `json:"error"`
+	Result *R        `json:"result"`
+	Error  *APIError `json:"error"`
 }
 
-// jsonRPCError describes an error returned by the Random.org API.
+// APIError describes an error returned by the Random.org API itself, as
+// opposed to a transport or decoding failure. Use errors.As to retrieve it.
 // See https://api.random.org/json-rpc/4/error-codes.
-type jsonRPCError struct {
+type APIError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-func (e *jsonRPCError) Error() string {
+func (e *APIError) Error() string {
 	return fmt.Sprintf(errAPI, e.Code, e.Message)
 }
 
@@ -148,7 +149,7 @@ func invokeRequest[R any](ctx context.Context, r *Random, method string, params 
 	var responseBody jsonRPCResponse[R]
 	if err := json.Unmarshal(body, &responseBody); err != nil {
 		if len(body) > 0 {
-			err = errors.New(string(body))
+			err = fmt.Errorf("%s: %w", body, err)
 		}
 
 		return zero, err

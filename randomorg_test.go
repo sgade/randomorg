@@ -2,9 +2,11 @@ package randomorg_test
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/sgade/randomorg"
@@ -98,8 +100,12 @@ func TestRequest_MalformedJSONBody(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
-	if err.Error() != "not json" {
-		t.Fatalf("err = %q, want %q", err.Error(), "not json")
+	if !strings.HasPrefix(err.Error(), "not json: ") {
+		t.Fatalf("err = %q, want prefix %q", err.Error(), "not json: ")
+	}
+	var syntaxErr *json.SyntaxError
+	if !errors.As(err, &syntaxErr) {
+		t.Fatalf("errors.As(err, *json.SyntaxError) = false, want true (err = %v)", err)
 	}
 }
 
@@ -119,6 +125,17 @@ func TestRequest_APIError(t *testing.T) {
 	const want = `API Error Code 401: "Invalid API key".`
 	if err.Error() != want {
 		t.Fatalf("err = %q, want %q", err.Error(), want)
+	}
+
+	var apiErr *randomorg.APIError
+	if !errors.As(err, &apiErr) {
+		t.Fatalf("errors.As(err, *APIError) = false, want true (err = %v)", err)
+	}
+	if apiErr.Code != 401 {
+		t.Errorf("apiErr.Code = %d, want 401", apiErr.Code)
+	}
+	if apiErr.Message != "Invalid API key" {
+		t.Errorf("apiErr.Message = %q, want %q", apiErr.Message, "Invalid API key")
 	}
 }
 
