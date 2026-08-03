@@ -26,6 +26,9 @@ type Usage struct {
 }
 
 func (r *Random) parseAndSaveUsage(json map[string]any) {
+	r.usageMutex.Lock()
+	defer r.usageMutex.Unlock()
+
 	usage := &Usage{}
 	if r.usage != nil {
 		usage = r.usage
@@ -101,8 +104,16 @@ func (r *Random) GetUsage(ctx context.Context) (Usage, error) {
 
 // Usage returns the API usage. This will return a cached version of the last request, if there is one.
 func (r *Random) Usage(ctx context.Context) (Usage, error) {
-	if r.usage != nil && r.usage.isComplete {
-		return *r.usage, nil
+	r.usageMutex.Lock()
+	cached := r.usage != nil && r.usage.isComplete
+	var usage Usage
+	if cached {
+		usage = *r.usage
+	}
+	r.usageMutex.Unlock()
+
+	if cached {
+		return usage, nil
 	}
 
 	return r.GetUsage(ctx)

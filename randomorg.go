@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -46,6 +47,8 @@ type Random struct {
 	apiKey string
 	// reusable http.Client
 	client *http.Client
+	// guards usage
+	usageMutex sync.Mutex
 	// usage cache
 	usage *Usage
 }
