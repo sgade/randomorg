@@ -39,6 +39,8 @@ var (
 	ErrParamRange = errors.New("invalid parameter range")
 	// ErrHTTPStatus is the error returned when the server's HTTP response status is unexpected.
 	ErrHTTPStatus = errors.New("unexpected HTTP status")
+	// ErrHTTPClient is the error returned when a nil http.Client was given.
+	ErrHTTPClient = errors.New("provide an http client")
 )
 
 // A Random defines a Random.org API Client.
@@ -58,6 +60,9 @@ func NewRandom(apiKey string, client *http.Client) (*Random, error) {
 	// check the api key
 	if apiKey == "" {
 		return nil, ErrAPIKey
+	}
+	if client == nil {
+		return nil, ErrHTTPClient
 	}
 
 	random := Random{

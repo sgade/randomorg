@@ -32,6 +32,16 @@ func TestNewRandom(t *testing.T) {
 			t.Fatal("random = nil, want non-nil")
 		}
 	})
+
+	t.Run("nil client", func(t *testing.T) {
+		random, err := randomorg.NewRandom(testAPIKey, nil)
+		if !errors.Is(err, randomorg.ErrHTTPClient) {
+			t.Fatalf("err = %v, want %v", err, randomorg.ErrHTTPClient)
+		}
+		if random != nil {
+			t.Fatalf("random = %v, want nil", random)
+		}
+	})
 }
 
 func TestRequest_SendsExpectedRequest(t *testing.T) {
