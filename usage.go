@@ -2,7 +2,6 @@ package randomorg
 
 import (
 	"context"
-	"strings"
 	"time"
 )
 
@@ -57,9 +56,7 @@ func (r *Random) mergeUsage(fields usageFields) {
 	}
 
 	if fields.CreationTime != nil {
-		// fix so that we can parse it
-		creationTimeString := strings.Replace(*fields.CreationTime, " ", "T", 1)
-		creationTime, err := time.Parse(creationTimeLayout, creationTimeString)
+		creationTime, err := parseAPITime(*fields.CreationTime)
 		if err == nil {
 			usage.CreationTime = creationTime
 		} else {

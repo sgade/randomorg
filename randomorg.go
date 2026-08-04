@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -76,6 +77,31 @@ func NewRandom(apiKey string, client *http.Client) (*Random, error) {
 // baseParams embeds the API key required by every Random.org API method.
 type baseParams struct {
 	APIKey string `json:"apiKey"`
+}
+
+// resolveOptions returns the first element of opts, or the zero value of T
+// if opts is empty. It backs the "opts ...MethodOptions" pattern used to add
+// optional parameters to methods without breaking existing call sites.
+func resolveOptions[T any](opts []T) T {
+	var o T
+	if len(opts) > 0 {
+		o = opts[0]
+	}
+	return o
+}
+
+// Bool returns a pointer to b. It is a convenience for setting Options
+// fields that distinguish "not specified" (nil) from an explicit false,
+// such as Replacement.
+func Bool(b bool) *bool {
+	return &b
+}
+
+// parseAPITime parses a RANDOM.ORG timestamp such as "2013-02-20 17:53:40Z"
+// (a space rather than the RFC 3339 "T" separating date and time) into a
+// time.Time.
+func parseAPITime(s string) (time.Time, error) {
+	return time.Parse(creationTimeLayout, strings.Replace(s, " ", "T", 1))
 }
 
 // jsonRPCRequest is the envelope for every Random.org JSON-RPC 2.0 request.
