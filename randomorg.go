@@ -22,10 +22,10 @@ import (
 const (
 	// The Random.org API request endpoint URL
 	requestEndpoint = "https://api.random.org/json-rpc/4/invoke"
-	// Example time format for ISO 8601
-	iso8601Example = time.RFC3339Nano //"2013-02-20 17:53:40Z"
+	// The time.Parse layout for the creationTime field the API returns, e.g. "2013-02-20 17:53:40Z"
+	creationTimeLayout = time.RFC3339Nano
 	// API Error template string
-	errAPI = "API Error Code %v: %q."
+	errAPI = "api error code %v: %q"
 )
 
 // Constants describing error situations.

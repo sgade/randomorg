@@ -132,7 +132,7 @@ func TestRequest_APIError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
-	const want = `API Error Code 401: "Invalid API key".`
+	const want = `api error code 401: "Invalid API key"`
 	if err.Error() != want {
 		t.Fatalf("err = %q, want %q", err.Error(), want)
 	}

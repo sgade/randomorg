@@ -59,7 +59,7 @@ func (r *Random) mergeUsage(fields usageFields) {
 	if fields.CreationTime != nil {
 		// fix so that we can parse it
 		creationTimeString := strings.Replace(*fields.CreationTime, " ", "T", 1)
-		creationTime, err := time.Parse(iso8601Example, creationTimeString)
+		creationTime, err := time.Parse(creationTimeLayout, creationTimeString)
 		if err == nil {
 			usage.CreationTime = creationTime
 		} else {
