@@ -71,7 +71,7 @@ func (r *Random) GenerateDecimalFractions(ctx context.Context, n, decimalPlaces 
 	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
-	if decimalPlaces < 1 || decimalPlaces > 20 {
+	if decimalPlaces < 1 || decimalPlaces > 14 {
 		return nil, ErrParamRange
 	}
 
@@ -103,7 +103,7 @@ func (r *Random) GenerateGaussians(ctx context.Context, n, mean, standardDeviati
 	if standardDeviation < -1_000_000 || standardDeviation > 1_000_000 {
 		return nil, ErrParamRange
 	}
-	if significantDigits < 2 || significantDigits > 20 {
+	if significantDigits < 2 || significantDigits > 14 {
 		return nil, ErrParamRange
 	}
 
@@ -130,10 +130,10 @@ func (r *Random) GenerateStrings(ctx context.Context, n, length int, characters 
 	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
-	if length < 1 || length > 20 {
+	if length < 1 || length > 32 {
 		return nil, ErrParamRange
 	}
-	if len(characters) < 1 || len(characters) > 80 {
+	if len(characters) < 1 || len(characters) > 128 {
 		return nil, ErrParamRange
 	}
 

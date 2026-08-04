@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/sgade/randomorg"
@@ -67,7 +68,7 @@ func TestGenerateDecimalFractions(t *testing.T) {
 			{"n too small", 0, 2},
 			{"n too large", 10001, 2},
 			{"decimalPlaces too small", 2, 0},
-			{"decimalPlaces too large", 2, 21},
+			{"decimalPlaces too large", 2, 15},
 		}
 		for _, tc := range cases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -117,7 +118,7 @@ func TestGenerateGaussians(t *testing.T) {
 			{"standardDeviation too small", 2, 0, -1e6 - 1, 4},
 			{"standardDeviation too large", 2, 0, 1e6 + 1, 4},
 			{"significantDigits too small", 2, 0, 1, 1},
-			{"significantDigits too large", 2, 0, 1, 21},
+			{"significantDigits too large", 2, 0, 1, 15},
 		}
 		for _, tc := range cases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -164,8 +165,9 @@ func TestGenerateStrings(t *testing.T) {
 			{"n too small", 0, 5, "abc"},
 			{"n too large", 10001, 5, "abc"},
 			{"length too small", 2, 0, "abc"},
-			{"length too large", 2, 21, "abc"},
+			{"length too large", 2, 33, "abc"},
 			{"characters empty", 2, 5, ""},
+			{"characters too long", 2, 5, strings.Repeat("a", 129)},
 		}
 		for _, tc := range cases {
 			t.Run(tc.name, func(t *testing.T) {
