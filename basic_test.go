@@ -108,8 +108,10 @@ func TestGenerateDecimalFractions(t *testing.T) {
 func TestGenerateGaussians(t *testing.T) {
 	t.Run("param validation", func(t *testing.T) {
 		cases := []struct {
-			name                                          string
-			n, mean, standardDeviation, significantDigits int
+			name                    string
+			n                       int
+			mean, standardDeviation float64
+			significantDigits       int
 		}{
 			{"n too small", 0, 0, 1, 4},
 			{"n too large", 10001, 0, 1, 4},
@@ -142,7 +144,7 @@ func TestGenerateGaussians(t *testing.T) {
 			}`), nil
 		})
 
-		got, err := random.GenerateGaussians(context.Background(), 2, 0, 1, 4)
+		got, err := random.GenerateGaussians(context.Background(), 2, 0.5, 1.5, 4)
 		if err != nil {
 			t.Fatalf("GenerateGaussians() error = %v", err)
 		}

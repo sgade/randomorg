@@ -86,14 +86,14 @@ func (r *Random) GenerateDecimalFractions(ctx context.Context, n, decimalPlaces 
 
 type generateGaussiansParams struct {
 	baseParams
-	N                 int `json:"n"`
-	Mean              int `json:"mean"`
-	StandardDeviation int `json:"standardDeviation"`
-	SignificantDigits int `json:"significantDigits"`
+	N                 int     `json:"n"`
+	Mean              float64 `json:"mean"`
+	StandardDeviation float64 `json:"standardDeviation"`
+	SignificantDigits int     `json:"significantDigits"`
 }
 
 // GenerateGaussians generates true random numbers from a Gaussian distribution.
-func (r *Random) GenerateGaussians(ctx context.Context, n, mean, standardDeviation, significantDigits int) ([]float64, error) {
+func (r *Random) GenerateGaussians(ctx context.Context, n int, mean, standardDeviation float64, significantDigits int) ([]float64, error) {
 	if n < 1 || n > 10_000 {
 		return nil, ErrParamRange
 	}
