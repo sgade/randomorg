@@ -44,3 +44,25 @@ func main() {
 
 See the [GoDoc](https://godoc.org/github.com/sgade/randomorg) for the full API, or
 `example_test.go` for more runnable examples.
+
+## Basic vs. Signed API
+
+This client implements both halves of the Random.org [Core
+API](https://api.random.org/json-rpc/4):
+
+- The [Basic API](https://api.random.org/json-rpc/4/basic) (`GenerateIntegers`,
+  `GenerateIntegerSequences`, `GenerateDecimalFractions`, `GenerateGaussians`,
+  `GenerateStrings`, `GenerateUUIDs`, `GenerateBlobs`) is the simplest way to
+  fetch true random values.
+- The [Signed API](https://api.random.org/json-rpc/4/signed)
+  (`GenerateSignedIntegers` and friends, plus `GetResult` and
+  `VerifySignature`) additionally returns a cryptographic signature proving
+  the values came from RANDOM.ORG, along with support for tickets
+  (`CreateTickets`, `RevealTickets`, `ListTickets`, `GetTicket`) that let a
+  third party audit individual values without exposing your API key.
+
+Optional parameters for every method (e.g. `replacement`,
+`pregeneratedRandomization`, and — for the Signed API —
+`licenseData`/`userData`/`ticketId`) are passed as a trailing, optional
+`MethodOptions` struct, so existing calls keep compiling unchanged when
+upgrading.
