@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/sgade/randomorg"
+	"github.com/sgade/randomorg/v3"
 )
 
 // usageFieldsEqual compares the exported fields of two Usage values.

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/sgade/randomorg"
+	"github.com/sgade/randomorg/v3"
 )
 
 // testAPIKey is a placeholder used throughout the tests. It is never sent

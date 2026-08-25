@@ -1,4 +1,4 @@
-module github.com/sgade/randomorg
+module github.com/sgade/randomorg/v3
 
 go 1.26
 

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sgade/randomorg"
+	"github.com/sgade/randomorg/v3"
 )
 
 // The response bodies below marked "docs example" are taken verbatim (aside

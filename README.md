@@ -2,7 +2,7 @@
 
 *Golang Random.org API Client*
 
-[![GoDoc](https://godoc.org/github.com/sgade/randomorg?status.svg)](https://godoc.org/github.com/sgade/randomorg)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sgade/randomorg/v3.svg)](https://pkg.go.dev/github.com/sgade/randomorg/v3)
 
 A client for the [Random.org JSON-RPC API](https://api.random.org/json-rpc/4), which
 serves true random numbers generated from atmospheric noise. An API key is required and
@@ -11,7 +11,7 @@ can be acquired at https://api.random.org/dashboard.
 ## Install
 
 ```sh
-go get github.com/sgade/randomorg
+go get github.com/sgade/randomorg/v3
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/sgade/randomorg"
+	"github.com/sgade/randomorg/v3"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 }
 ```
 
-See the [GoDoc](https://godoc.org/github.com/sgade/randomorg) for the full API, or
+See the [reference docs](https://pkg.go.dev/github.com/sgade/randomorg/v3) for the full API, or
 `example_test.go` for more runnable examples.
 
 ## Basic vs. Signed API

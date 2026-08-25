@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/sgade/randomorg"
+	"github.com/sgade/randomorg/v3"
 )
 
 // The response bodies below marked "docs example" are taken from

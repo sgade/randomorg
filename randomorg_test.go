@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sgade/randomorg"
+	"github.com/sgade/randomorg/v3"
 )
 
 func TestNewRandom(t *testing.T) {
